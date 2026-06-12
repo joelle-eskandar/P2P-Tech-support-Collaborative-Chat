@@ -4,19 +4,28 @@
 
 // Receive Thread
 
-void* receive_thread(void* arg) {
+
+   void* receive_thread(void* arg) {
     int sock = *(int*)arg;
     char buffer[1024];
 
     while (1) {
-        int bytes = recv(sock, buffer, sizeof(buffer), 0);
+        int bytes = recv(sock, buffer, sizeof(buffer) - 1, 0);
+
         if (bytes <= 0) {
             printf(" Connection closed.\n");
             break;
         }
 
         buffer[bytes] = '\0';
-        printf("\n Incoming message: %s\n", buffer);
+
+        printf("\n📩 Incoming message: %s\n", buffer);
+
+        FILE *log = fopen("chat_log.txt", "a");
+        if (log != NULL) {
+            fprintf(log, "Received: %s", buffer);
+            fclose(log);
+        }
     }
 
     return NULL;
@@ -33,7 +42,19 @@ void* send_thread(void* arg) {
         printf("Type a message: ");
         fgets(msg, sizeof(msg), stdin);
 
+        if (strncmp(msg, "exit", 4) == 0) {
+            printf("Closing chat...\n");
+            close(sock);
+            break;
+        }
+
         send(sock, msg, strlen(msg), 0);
+
+        FILE *log = fopen("chat_log.txt", "a");
+        if (log != NULL) {
+            fprintf(log, "Sent: %s", msg);
+            fclose(log);
+        }
     }
 
     return NULL;
