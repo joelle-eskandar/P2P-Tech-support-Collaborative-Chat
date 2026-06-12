@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <pthread.h>
-
+#define PORT 8080 
 
 void start_listening();
 void connect_to_peer(char* ip);
