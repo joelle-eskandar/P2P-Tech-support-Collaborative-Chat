@@ -73,17 +73,24 @@ void* send_thread(void* arg) {
         snprintf(full_msg, sizeof(full_msg), "%s: %s", username, msg);
         send(sock, full_msg, strlen(full_msg), 0);
 
-
-     FILE *log = fopen("chat_log.txt", "a");
-     if (log != NULL) {
         time_t now = time(NULL);
-        char *time_str = ctime(&now);
-        time_str[strcspn(time_str, "\n")] = '\0';
+        struct tm *t = localtime(&now);
 
-       fprintf(log, "[%s] Sent: %s: %s\n", time_str, username, msg);
-       fclose(log);
-       }
+       FILE *log = fopen("chat_log.txt", "a");
+
+       if (log != NULL) {
+        fprintf(log,
+          "[%02d:%02d:%02d] %s\n",
+            t->tm_hour,
+            t->tm_min,
+            t->tm_sec,
+            full_msg);
+
+           fclose(log);
     }
+
+
+   }
 
     return NULL;
 }
