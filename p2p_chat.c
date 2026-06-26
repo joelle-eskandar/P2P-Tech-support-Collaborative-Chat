@@ -37,6 +37,11 @@
 void* send_thread(void* arg) {
     int sock = *(int*)arg;
     char msg[1024];
+    char username[50];
+
+  printf("Enter technician name: ");
+  fgets(username, sizeof(username), stdin);
+  username[strcspn(username, "\n")] = '\0';
 
     while (1) {
         printf("Type a message (or use /ticket, /status, /solution, /exit): ");
@@ -60,11 +65,14 @@ void* send_thread(void* arg) {
             printf("Solution has been recorded.\n");
         }
 
-        send(sock, msg, strlen(msg), 0);
+        char full_msg[1200];
+        snprintf(full_msg, sizeof(full_msg), "%s: %s", username, msg);
+        send(sock, full_msg, strlen(full_msg), 0);
+
 
         FILE *log = fopen("chat_log.txt", "a");
         if (log != NULL) {
-            fprintf(log, "Sent: %s\n", msg);
+            fprintf(log, "Sent: %s: %s\n", username, msg);
             fclose(log);
         }
     }
