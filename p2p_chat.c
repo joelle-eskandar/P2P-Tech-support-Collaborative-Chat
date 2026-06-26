@@ -1,6 +1,8 @@
 #include "p2p_chat.h"
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
+
 
 // Receive Thread
 
@@ -70,11 +72,15 @@ void* send_thread(void* arg) {
         send(sock, full_msg, strlen(full_msg), 0);
 
 
-        FILE *log = fopen("chat_log.txt", "a");
-        if (log != NULL) {
-            fprintf(log, "Sent: %s: %s\n", username, msg);
-            fclose(log);
-        }
+     FILE *log = fopen("chat_log.txt", "a");
+     if (log != NULL) {
+        time_t now = time(NULL);
+        char *time_str = ctime(&now);
+        time_str[strcspn(time_str, "\n")] = '\0';
+
+       fprintf(log, "[%s] Sent: %s: %s\n", time_str, username, msg);
+       fclose(log);
+       }
     }
 
     return NULL;
