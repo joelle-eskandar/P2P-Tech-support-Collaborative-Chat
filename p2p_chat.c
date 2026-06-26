@@ -40,6 +40,7 @@ void* send_thread(void* arg) {
     int sock = *(int*)arg;
     char msg[1024];
     char username[50];
+    static int ticket_id = 1000;
 
   printf("Enter technician name: ");
   fgets(username, sizeof(username), stdin);
@@ -58,7 +59,8 @@ void* send_thread(void* arg) {
         }
 
         if (strncmp(msg, "/ticket", 7) == 0) {
-            printf("Technical support ticket created.\n");
+            ticket_id++;
+            printf("Ticket #%d Created.\n", ticket_id);
         }
         else if (strncmp(msg, "/status", 7) == 0) {
             printf("Ticket status updated.\n");
