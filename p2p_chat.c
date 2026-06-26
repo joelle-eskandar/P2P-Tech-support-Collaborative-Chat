@@ -39,20 +39,32 @@ void* send_thread(void* arg) {
     char msg[1024];
 
     while (1) {
-        printf("Type a message: ");
+        printf("Type a message (or use /ticket, /status, /solution, /exit): ");
         fgets(msg, sizeof(msg), stdin);
 
-        if (strncmp(msg, "exit", 4) == 0) {
+        msg[strcspn(msg, "\n")] = '\0';
+
+        if (strcmp(msg, "/exit") == 0) {
             printf("Closing chat...\n");
             close(sock);
             break;
+        }
+
+        if (strncmp(msg, "/ticket", 7) == 0) {
+            printf("Technical support ticket created.\n");
+        }
+        else if (strncmp(msg, "/status", 7) == 0) {
+            printf("Ticket status updated.\n");
+        }
+        else if (strncmp(msg, "/solution", 9) == 0) {
+            printf("Solution has been recorded.\n");
         }
 
         send(sock, msg, strlen(msg), 0);
 
         FILE *log = fopen("chat_log.txt", "a");
         if (log != NULL) {
-            fprintf(log, "Sent: %s", msg);
+            fprintf(log, "Sent: %s\n", msg);
             fclose(log);
         }
     }
